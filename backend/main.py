@@ -1,6 +1,6 @@
 import threading
 from scrapers.ArticleScraper import ArticleScraper
-import time
+from scrapers.LinkScraper import LinkScraper
 
 
 def producer_task(producer, tasks):
@@ -26,7 +26,7 @@ def main_multithreading():
         thread.join()
 
 def main():
-    producer = ArticleScraper(link="https://edition.cnn.com/")
+    producer = LinkScraper(link="https://www.bbc.com/")
     # producer = ArticleScraper(link="https://edition.cnn.com/2024/07/28/europe/hungary-viktor-orban-russia-irrational-west-intl/index.html")
     # producer = ArticleScraper(link="https://www.google.com/search?q=How+to+work+with+the+Firestore+database+from+Python%3F&oq=How+to+work+with+the+Firestore+database+from+Python%3F&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigATIHCAIQIRigATIHCAMQIRigATIHCAQQIRigATIHCAUQIRigAdIBBzY4NWowajeoAgCwAgA&sourceid=chrome&ie=UTF-8")
     # producer = ArticleScraper(link="https://www.bbc.com/")
