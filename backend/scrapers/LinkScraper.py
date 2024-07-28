@@ -19,7 +19,6 @@ class LinkScraper(Scraper):
         self.send_links_to_db()
 
     def get_links_from_html(self):
-
         changed_links = []
 
         if self.soup is None:
@@ -50,8 +49,12 @@ class LinkScraper(Scraper):
 
         return changed_links
 
-    def send_links_to_db(self):
+    def is_link_unique(self, link):
+        #Check if a link already exists in the Firestore database. Return False or True
+        docs = database_instance.db.collection('news').where('url', '==', link).get()
+        return len(docs) == 0
 
+    def send_links_to_db(self):
         current_time = time.localtime()
 
         # Форматирование времени в строку в формате "DD.MM.YYYY"
@@ -59,18 +62,23 @@ class LinkScraper(Scraper):
 
         batch = database_instance.db.batch()
 
+        licznik = 0
+
         for link in self.links:
-            doc_ref = database_instance.db.collection('news').document()
+            if self.is_link_unique(link):
+                doc_ref = database_instance.db.collection('news').document()
 
-            data = {
-                "id": doc_ref.id,
-                "url": link,
-                "tags": [],
-                "date": formatted_date,
-                "domain": self.domain,
-            }
+                licznik += 1
 
-            batch.set(doc_ref, data)
+                data = {
+                    "id": doc_ref.id,
+                    "url": link,
+                    "tags": [],
+                    "date": formatted_date,
+                    "domain": self.domain,
+                }
 
+                batch.set(doc_ref, data)
 
+        print(f"Were pushed links to DB: {licznik}")
         batch.commit()
