@@ -2,3 +2,4 @@ __pycache__
 .vscode
 settings.py
 *.code-workspace
+ucast-news-firebase-key.json
