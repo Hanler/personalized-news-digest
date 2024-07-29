@@ -8,7 +8,6 @@ from config.settings import CHROMEDRIVER_PATH, CHROME_PATH, USELESS_TAGS
 
 
 class Scraper(object):
-
     def __init__(self, link):
         self.link = link
 
