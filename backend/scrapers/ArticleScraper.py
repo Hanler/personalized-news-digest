@@ -1,4 +1,4 @@
-from task_queue.tasks import process_task
+from task_queue.tasks import nn_worker_task
 
 import os
 from selenium import webdriver
@@ -16,56 +16,21 @@ from config.settings import CHROMEDRIVER_PATH, CHROME_PATH
 from scrapers.Scraper import Scraper
 
 class ArticleScraper(Scraper):
-
     """
     A class used to represent an article scraper that processes
     the page and extracts the article,
     then sends a task for asynchronous processing
     """
 
-    def __init__(self, link):       
+    def __init__(self, id, link):
         super().__init__(link)
+        self.id = id
 
-    def get_source_html(self):
-        try:
+        self.push_task_to_queue("text")
 
-            links = [a["href"] for a in self.soup.find_all("a", href=True)]
-
-            temp_links = set(links)
-            links = list(temp_links)
-            changed_links = []
-
-            # domain = urlparse(url).netloc
-
-            # for link in links:
-            #     if link.startswith("#"):
-            #         continue
-            #     if link.startswith("?"):
-            #         continue
-            #     if link.startswith("/"):
-            #         changed_link = urljoin(url, link)
-            #         if urlparse(changed_link).netloc == domain:
-            #             changed_links.append(changed_link)
-            #     elif urlparse(link).netloc == domain:
-            #         changed_links.append(link)
-
-            # # DELETE LATER
-            # # ------------
-            # with open("0.2_links.txt", "w", encoding="utf-8") as file:
-            #     for link in changed_links:
-            #         file.write(link + "\n")
-            # # ------------
-
-
-        except Exception as _ex:
-            print(_ex)
-
-        # return changed_links
-        return links
-
-    def send_task(self, task):
+    def push_task_to_queue(self, text):
         """
-        Sends a task for asynchronous processing using Celery
+        Push a task for asynchronous processing using Celery
         """
-        result = process_task.delay(task)
-        print(f'Task sent: {task}, Task ID: {result.id}')
+        result = nn_worker_task.apply_async(args=[self.id, text], queue='nn_worker')
+        print(f'Task sent: {text}, Task ID: {result.id}')
