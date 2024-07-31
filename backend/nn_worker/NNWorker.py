@@ -9,7 +9,7 @@ class NNWorker(object):
     def __init__(self):     
         print("NNWorker was inited")
 
-    def start(self, article):
+    def start(self, id, article):
         """
         Run the NN worker
         """
